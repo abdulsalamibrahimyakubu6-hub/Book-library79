@@ -1,65 +1,131 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import BookCard from "../../components/BookCard";
+import Navbar from "../../components/Navbar";
+import Searchbar from "../../components/Searchbar";
+import Footer from "../../components/Footer";
 
 export default function Home() {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = localStorage.getItem("loggedIn");
+
+    if (!user) {
+      router.push("/login");
+    }
+  }, [router]);
+
+  async function searchBooks(query) {
+    setLoading(true);
+    setSearched(true);
+
+    try {
+      const response = await fetch(
+        `https://gutendex.com/books?search=${encodeURIComponent(query)}`
+      );
+
+      const data = await response.json();
+
+      setBooks(data.results || []);
+    } catch (error) {
+      console.log(error);
+      alert("Unable to fetch books.");
+    }
+
+    setLoading(false);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className={darkMode ? "dark" : "light"}>
+      <Navbar />
+
+      <button onClick={() => setDarkMode(!darkMode)}>
+        {darkMode
+          ? "🌞 Light Mode"
+          : "🌙 Dark Mode"}
+      </button>
+
+      {/* Hero Section */}
+      <div className="hero">
+        <h1>📚 Welcome to Book Library</h1>
+
+        <p>
+          Discover thousands of free books,
+          search by title, and enjoy reading online anytime.
+        </p>
+
+        <Searchbar searchBooks={searchBooks} />
+      </div>
+
+      {/* Features Section */}
+      <div className="features">
+
+        <div className="feature-card">
+          <h3>📚 70,000+ Books</h3>
+          <p>
+            Search thousands of classic books
+            from the Gutendex Library.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="feature-card">
+          <h3>📖 Read Online</h3>
+          <p>
+            Open books instantly and enjoy
+            reading directly in your browser.
+          </p>
         </div>
-      </main>
+
+        <div className="feature-card">
+          <h3>🌙 Dark Mode</h3>
+          <p>
+            Switch between light and dark themes
+            for a comfortable reading experience.
+          </p>
+        </div>
+
+        <div className="feature-card">
+          <h3>🔒 Secure Login</h3>
+          <p>
+            Login securely before accessing
+            your personal library.
+          </p>
+        </div>
+
+      </div>
+
+      {/* Books */}
+      {loading ? (
+        <p style={{ textAlign: "center" }}>Loading...</p>
+      ) : books.length > 0 ? (
+        <div className="book-container">
+          {books.map((book) => (
+            <BookCard
+              key={book.id}
+              id={book.id}
+              title={book.title}
+              author={book.authors?.[0]?.name}
+              coverId={book.formats["image/jpeg"]}
+            />
+          ))}
+        </div>
+      ) : (
+        searched && (
+          <p style={{ textAlign: "center" }}>
+            No books found.
+          </p>
+        )
+      )}
+
+      <Footer />
     </div>
   );
 }
