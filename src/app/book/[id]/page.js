@@ -1,11 +1,14 @@
 import Link from "next/link";
 
 export default async function BookPage({ params }) {
+  console.log("Params:", params);
+
   const { id } = await params;
 
-  console.log("Book ID:".id);
+  console.log("Book ID:", id);
 
-  const response = await fetcgith(
+
+  const response = await fetch(
     `https://gutendex.com/books/${id}`
   );
 
