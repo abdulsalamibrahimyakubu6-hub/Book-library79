@@ -12,18 +12,8 @@ export default async function BookPage({ params }) {
     `https://gutendex.com/books/${id}`
   );
 
-  if (!response.ok) {
-    return (
-      <div className="book-details">
-        <h1>📚 Book not found</h1>
-        <p>Unable to load this book.</p>
-
-        <Link href="/" className="read-btn">
-          🏠 Back Home
-        </Link>
-      </div>
-    );
-  }
+  
+  <pre>{JSON.stringify(book, null, 2)}</pre>
 
   const book = await response.json();
 
