@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function BookCard({
+export default function BookList({
   title,
   author,
   id,

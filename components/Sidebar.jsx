@@ -1,1 +1,14 @@
-
+export default function Sidebar() {
+  return (
+    <aside className="sidebar">
+      <h2>Navigation</h2>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/favorites">Favorites</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </aside>
+  );
+}

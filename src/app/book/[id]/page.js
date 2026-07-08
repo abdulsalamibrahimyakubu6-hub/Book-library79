@@ -12,9 +12,6 @@ export default async function BookPage({ params }) {
     `https://gutendex.com/books/${id}`
   );
 
-  
-  <pre>{JSON.stringify(book, null, 2)}</pre>
-
   const book = await response.json();
 
   const imageUrl = book.formats["image/jpeg"];
