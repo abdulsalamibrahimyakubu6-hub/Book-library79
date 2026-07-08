@@ -29,8 +29,17 @@ export default function Home() {
 
     try {
       const response = await fetch(
-        `https://gutendex.com/books?search=${encodeURIComponent(query)}`
-      );
+  `https://gutendex.com/books/${id}`,
+  {
+    cache: "no-store",
+  }
+);
+
+console.log("Status:", response.status);
+
+console.log("Book title:", book.title);
+console.log("Formats:", Object.keys(book.formats || {}));
+      
 
       const data = await response.json();
 

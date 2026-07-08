@@ -44,7 +44,8 @@ export default function BookCard({
 
   return (
     <div className="book-card">
-      <Link href={`/book/${id}`}>
+      <Link href={`/book/${id}`}
+      onClick={() => console.log("Book ID:",id)}>
         {imageUrl && (
           <img
             src={imageUrl}
