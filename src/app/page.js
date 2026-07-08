@@ -24,28 +24,32 @@ export default function Home() {
   }, [router]);
 
   async function searchBooks(query) {
+    if (!query.trim()) return;
+
     setLoading(true);
     setSearched(true);
 
     try {
       const response = await fetch(
-  `https://gutendex.com/books?search=${query}`,
-  {
-    cache: "no-store",
-  }
-);
+        `https://gutendex.com/books?search=${encodeURIComponent(query)}`,
+        {
+          cache: "no-store",
+        }
+      );
 
-console.log("Status:", response.status);
+      if (!response.ok) {
+        throw new Error("Failed to fetch books.");
+      }
 
       const data = await response.json();
-
       setBooks(data.results || []);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Unable to fetch books.");
+      setBooks([]);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
@@ -53,9 +57,7 @@ console.log("Status:", response.status);
       <Navbar />
 
       <button onClick={() => setDarkMode(!darkMode)}>
-        {darkMode
-          ? "🌞 Light Mode"
-          : "🌙 Dark Mode"}
+        {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
       </button>
 
       {/* Hero Section */}
@@ -63,8 +65,8 @@ console.log("Status:", response.status);
         <h1>📚 Welcome to Book Library</h1>
 
         <p>
-          Discover thousands of free books,
-          search by title, and enjoy reading online anytime.
+          Discover thousands of free books, search by title, and enjoy reading
+          online anytime.
         </p>
 
         <Searchbar searchBooks={searchBooks} />
@@ -72,39 +74,28 @@ console.log("Status:", response.status);
 
       {/* Features Section */}
       <div className="features">
-
         <div className="feature-card">
           <h3>📚 70,000+ Books</h3>
-          <p>
-            Search thousands of classic books
-            from the Gutendex Library.
-          </p>
+          <p>Search thousands of classic books from the Gutendex Library.</p>
         </div>
 
         <div className="feature-card">
           <h3>📖 Read Online</h3>
-          <p>
-            Open books instantly and enjoy
-            reading directly in your browser.
-          </p>
+          <p>Open books instantly and enjoy reading directly in your browser.</p>
         </div>
 
         <div className="feature-card">
           <h3>🌙 Dark Mode</h3>
           <p>
-            Switch between light and dark themes
-            for a comfortable reading experience.
+            Switch between light and dark themes for a comfortable reading
+            experience.
           </p>
         </div>
 
         <div className="feature-card">
           <h3>🔒 Secure Login</h3>
-          <p>
-            Login securely before accessing
-            your personal library.
-          </p>
+          <p>Login securely before accessing your personal library.</p>
         </div>
-
       </div>
 
       {/* Books */}
@@ -117,16 +108,14 @@ console.log("Status:", response.status);
               key={book.id}
               id={book.id}
               title={book.title}
-              author={book.authors?.[0]?.name}
-              coverId={book.formats["image/jpeg"]}
+              author={book.authors?.[0]?.name || "Unknown Author"}
+              coverId={book.formats?.["image/jpeg"] || ""}
             />
           ))}
         </div>
       ) : (
         searched && (
-          <p style={{ textAlign: "center" }}>
-            No books found.
-          </p>
+          <p style={{ textAlign: "center" }}>No books found.</p>
         )
       )}
 

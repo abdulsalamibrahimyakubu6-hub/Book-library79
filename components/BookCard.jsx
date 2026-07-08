@@ -8,7 +8,9 @@ export default function BookCard({
   id,
   coverId,
 }) {
-  const imageUrl = coverId?.replace("http://", "https://");
+  const imageUrl = coverId
+    ? coverId.replace("http://", "https://")
+    : "https://via.placeholder.com/200x300?text=No+Cover";
 
   function addToFavorites(e) {
     e.preventDefault();
@@ -44,14 +46,14 @@ export default function BookCard({
 
   return (
     <div className="book-card">
-      <Link href={`/book/${id}`}
-      onClick={() => console.log("Book ID:",id)}>
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt={title}
-          />
-        )}
+      <Link
+        href={`/book/${id}`}
+        onClick={() => console.log("Book ID:", id)}
+      >
+        <img
+          src={imageUrl}
+          alt={title || "Book Cover"}
+        />
 
         <h3>{title || "Untitled"}</h3>
 
